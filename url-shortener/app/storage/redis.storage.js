@@ -16,8 +16,12 @@ class RedisStorage extends Storage{
    * @param {string} value
    */
 
-    async set(key ,value){
-        await redis.set(key , value );
+    async set(key ,value , ttlSeconds=null){
+        if(ttlSeconds){
+            await redis.set(key , value , {EX : ttlSeconds});
+        }else{
+            await redis.set(key , value);
+        }
     }
 
     /**
