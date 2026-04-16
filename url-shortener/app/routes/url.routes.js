@@ -1,4 +1,5 @@
 const express = require("express");
+const rateLimiter = require("../middlewares/rateLimiter");
 
 /**
  * URL Routes Module
@@ -19,6 +20,10 @@ const express = require("express");
  */
 const urlRoutes = (controller) => {
     const router = express.Router();
+    /**
+     * Rate Limiter Middleware to Limit User Requests to 5 requests per minute per IP
+     */
+    router.use(rateLimiter);
 
     /**
      * Create short URL
