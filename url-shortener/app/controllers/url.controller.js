@@ -1,3 +1,5 @@
+const { isValidAlias } = require("../utils/validateAlias");
+
 /**
  * Controller layer for URL Shortener.
  *
@@ -27,7 +29,8 @@ class UrlContoller {
      * Request Body:
      * {
      *   "long_url": "https://example.com",
-     *   "ttl": 60   // optional (seconds)
+     *   "ttl": 60   // optional (seconds),
+     *   "custom_alias": "brand-name"
      * }
      *
      * Response:
@@ -40,17 +43,23 @@ class UrlContoller {
      * - 400: Missing long_url
      */
     create = async (req, res) => {
-        const { long_url, ttl } = req.body;
+        const { long_url, ttl , custom_alias} = req.body;
 
         if (!long_url) {
             return res.status(400).json({ error: "long_url required" });
+        }
+
+        if(custom_alias && !isValidAlias(custom_alias)){
+            return res.status(400).json({
+                error : "invalid alias format. Alias must be alphanumeric and between 3 to 20 characters"
+            })
         }
 
         // Convert TTL to seconds (if provided)
         const ttlSeconds = ttl ? parseInt(ttl) : null;
 
         // Generate short code via service layer
-        const shortCode = await this.service.createShortUrl(long_url, ttlSeconds);
+        const shortCode = await this.service.createShortUrl(long_url, ttlSeconds , custom_alias);
 
         // Construct base URL dynamically
         const baseUrl = `${req.protocol}://${req.get("host")}`;

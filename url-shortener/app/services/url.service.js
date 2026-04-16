@@ -31,6 +31,7 @@ class UrlService {
      *
      * @param {string} longUrl - Original URL
      * @param {number|null} ttlSeconds - Optional expiry time in seconds
+     * @param {string|null} custom_alias - Optional custom_alias name
      * @returns {Promise<string>} Generated short code
      *
      * Flow:
@@ -38,10 +39,25 @@ class UrlService {
      * 2. Encode ID using Base62
      * 3. Store mapping in storage layer
      */
-    async createShortUrl(longUrl, ttlSeconds){
-        const shortCode = encodeBase62(this.counter++);
+    async createShortUrl(longUrl, ttlSeconds,customAlias){
 
-        await this.storage.set(shortCode, longUrl, ttlSeconds);
+        let shortCode = '';
+
+        if(customAlias){
+            const exists = await this.storage.exists(customAlias);
+
+            if(exists){
+                throw new Error("Alias already exists");
+            }
+
+            shortCode = customAlias;
+        }else{
+            shortCode = encodeBase62(this.counter++);
+        }
+
+        
+
+        await this.storage.set(shortCode, longUrl, ttlSeconds,customAlias);
 
         return shortCode;
     }
