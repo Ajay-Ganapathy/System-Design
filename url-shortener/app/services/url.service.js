@@ -6,18 +6,18 @@ class UrlService{
         this.counter = 1;
     }
 
-    createShortUrl(longUrl){
+    async createShortUrl(longUrl){
         const shortCode = encodeBase62(this.counter++);
-        this.storage.set(shortCode , longUrl);
+        await this.storage.set(shortCode , longUrl);
         return shortCode;
     }
 
-    getLongUrl(shortCode){
-        return this.storage.get(shortCode);
+    async getLongUrl(shortCode){
+        return await this.storage.get(shortCode);
     }
 
-    exists(shortCode){
-        return this.storage.exists(shortCode);
+    async exists(shortCode){
+        return await this.storage.exists(shortCode);
     }
 }
 

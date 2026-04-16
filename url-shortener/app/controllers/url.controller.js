@@ -3,7 +3,7 @@ class UrlContoller {
         this.service = service ;
     }
 
-    create = (req , res) => {
+    create = async (req , res) => {
          const { long_url } = req.body;
 
         if (!long_url) {
@@ -11,7 +11,7 @@ class UrlContoller {
         }
 
         // Generate unique short code using Base62 encoding
-        const shortCode = this.service.createShortUrl(long_url);
+        const shortCode = await this.service.createShortUrl(long_url);
 
         // Dynamically construct base URL
         const baseUrl = `${req.protocol}://${req.get("host")}`;
@@ -23,27 +23,29 @@ class UrlContoller {
     }
 
 
-    redirect = (req, res) => {
+    redirect = async (req, res) => {
         const { code } = req.params;
 
         if (!this.service.exists(code)) {
         return res.status(404).send("Not Found");
         }
 
-        const longUrl = this.service.getLongUrl(code);
+        const longUrl = await this.service.getLongUrl(code);
         return res.redirect(longUrl);
     };
 
-    getInfo = (req, res) => {
+    getInfo = async (req, res) => {
         const { code } = req.params;
 
         if (!this.service.exists(code)) {
         return res.status(404).send("Not Found");
         }
 
+        const long_url = await this.service.getLongUrl(code);
+
         return res.json({
         short_code: code,
-        long_url: this.service.getLongUrl(code)
+        long_url: long_url
         });
     };
 }
