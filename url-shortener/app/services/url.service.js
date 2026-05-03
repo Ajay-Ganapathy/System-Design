@@ -57,7 +57,7 @@ class UrlService {
 
         
 
-        await this.storage.set(shortCode, longUrl, ttlSeconds,customAlias);
+        await this.storage.set(shortCode, longUrl, ttlSeconds);
 
         return shortCode;
     }

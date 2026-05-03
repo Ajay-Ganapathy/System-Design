@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
+require("dotenv").config();
 
 const InMemoryStorage = require("./storage/inMemory.storage");
 const RedisStorage = require("./storage/redis.storage");
+const PostgresStorage = require("./storage/postgres.storage");
+const CacheStorage = require("./storage/cache.storage");
 const UrlService = require("./services/url.service");
 const UrlController = require("./controllers/url.controller");
 const urlRoutes = require("./routes/url.routes");
@@ -29,9 +32,12 @@ app.use(express.json());
  *
  * This allows swapping storage without changing business logic.
  */
-const storage = new RedisStorage();
+//const storage = new RedisStorage();
 // const storage = new InMemoryStorage(); // alternative
 
+const redis = new RedisStorage();
+const db = new PostgresStorage();
+const storage = new CacheStorage(redis, db);
 /**
  * Initialize service layer with storage dependency
  */
